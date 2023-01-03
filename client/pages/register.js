@@ -20,7 +20,34 @@ const registerPage = () => {
         setState({...state, [name]: e.target.value, error: '', success: '', buttonText: 'Register'})
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setState({ ...state, buttonText: 'Registering'})
+      try{
+        const response = await axios.post(`http://localhost:8000/api/register`, {
+          name, email, username, password
+        })
+        console.log(response)
+          setState({
+            ...state,
+            name: '',
+            email: '',
+            username: '',
+            password: '',
+            buttonText: 'Submitted',
+            success: response.data.message
+          });
+      } catch {
+        console.log(error)
+        setState({
+          ...state,
+          buttonText: 'Register',
+          error: error.response.data.error
+        })
+      }
+    }
+
+/*    const handleSubmit = (e) => {
         e.preventDefault();
         setState({ ...state, buttonText: 'Registering'})
         //console.table({name, email, username, password});
@@ -28,6 +55,7 @@ const registerPage = () => {
           name, email, username, password
         })
         .then(response => {
+          console.log(response)
           setState({
             ...state,
             name: '',
@@ -39,13 +67,16 @@ const registerPage = () => {
           });
         })
         .catch(error => {
+          console.log(error)
           setState({
             ...state,
             buttonText: 'Register',
             error: error.response.data.error
           })
         })
-    };
+    }; 
+
+*/
 
     const registerForm = () => (
       <form onSubmit={handleSubmit}>
