@@ -38,7 +38,7 @@ const registerPage = () => {
             buttonText: 'Submitted',
             success: response.data.message
           });
-      } catch {
+      } catch (error) {
         console.log(error)
         setState({
           ...state,
@@ -82,19 +82,19 @@ const registerPage = () => {
     const registerForm = () => (
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <input value={name} onChange={handleChange('name')} type="text" className="form-control" placeholder="Your name"></input>
+          <input value={name} onChange={handleChange('name')} type="text" className="form-control" placeholder="Your name" required></input>
         </div>
         <br/>
         <div className="form-group">
-          <input value={email} onChange={handleChange('email')} type="email" className="form-control" placeholder="Your email"></input>
+          <input value={email} onChange={handleChange('email')} type="email" className="form-control" placeholder="Your email" required></input>
         </div>
         <br/>
         <div className="form-group">
-          <input value={username} onChange={handleChange('username')} type="text" className="form-control" placeholder="Username"></input>
+          <input value={username} onChange={handleChange('username')} type="text" className="form-control" placeholder="Username" required></input>
         </div>
         <br/>
         <div className="form-group">
-          <input value={password} onChange={handleChange('password')} type="password" className="form-control" placeholder="Type a password"></input>
+          <input value={password} onChange={handleChange('password')} type="password" className="form-control" placeholder="Type a password" required></input>
         </div>
         <br/>
         <div className="form-group">

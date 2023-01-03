@@ -2,6 +2,7 @@ const User = require('../models/user');
 const AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
 const { registerEmailParams } = require('../helpers/email');
+const shortId = require('shortid');
 
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -13,7 +14,7 @@ const ses = new AWS.SES({ apiVersion: '2010-12-01' });
 
 exports.register = (req, res) => {
     // console.log('REGISTER CONTROLLER', req.body);
-    const { name, email, password } = req.body;
+    const { name, email, username, password } = req.body;
     // check if user exists in our db
     User.findOne({ email }).exec((err, user) => {
         if (user) {
@@ -22,7 +23,7 @@ exports.register = (req, res) => {
             });
         }
         // generate token with user name email and password
-        const token = jwt.sign({ name, email, password }, process.env.JWT_ACCOUNT_ACTIVATION, {
+        const token = jwt.sign({ name, email, username,password }, process.env.JWT_ACCOUNT_ACTIVATION, {
             expiresIn: '10m'
         });
 
@@ -45,4 +46,49 @@ exports.register = (req, res) => {
                 });
             });
     });
+};
+
+exports.registerActivate = (req, res) => {
+    const { token } = req.body;
+    // console.log(token);
+    jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION, function(err, decoded) {
+        if (err) {
+            return res.status(401).json({
+                error: 'Expired link. Try again'
+            });
+        }
+        //console.log(decoded)
+        const { name, email, username, password } = decoded;
+        //console.log(password)
+        const Username = username.split(" ").join("")+shortId.generate();
+        //console.log(Username)
+
+
+        User.findOne({ email }).exec((err, user) => {
+            if (user) {
+                return res.status(401).json({
+                    error: 'Email is taken'
+                });
+            }
+
+            // register new user
+
+            const newUser = new User({ username:Username, name, email, password });
+            newUser.save((err, result) => {
+                if (err) {
+                    return res.status(401).json({
+                        error: 'Error saving user in database. Try later'
+                    });
+                }
+                return res.json({
+                    message: 'Registration success. Please login.'
+                });
+            });
+
+
+
+        });
+    }); 
+
+
 };
