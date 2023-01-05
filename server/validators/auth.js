@@ -19,9 +19,9 @@ exports.userRegisterValidator = [
 
 exports.userLoginValidator = [
     check('email')
-    .isEmail()
-    .withMessage('Must be a valid email'),
+        .isEmail()
+        .withMessage('Must be a valid email address'),
     check('password')
-    .isLength({ min: 5})
-    .withMessage('Password must be 5 or more character long')    
-]
+        .isLength({ min: 5 })
+        .withMessage('Password must be at least 5 characters long')
+];

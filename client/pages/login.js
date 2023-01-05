@@ -1,5 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../components/layout";
+import Link from "next/link";
+import Router from "next/router";
+import axios from 'axios';
+import { showSuccessMessage, showErrorMessage } from '../helpers/alerts';
+import { API } from '../config';
 
 const loginPage = () => {
   const [state, setState] = useState({
@@ -16,19 +21,32 @@ const loginPage = () => {
       setState({...state, [name]: e.target.value, error: '', success: '', buttonText: 'Login'})
   }
 
-  const handleSubmit = (e) => {
-      e.preventDefault();
-      console.table({email, password});
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setState({ ...state, buttonText: 'Logging in'})
+    try{
+      const response = await axios.post(`${API}/login`, {
+        email, password
+      })
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+      setState({
+        ...state,
+        buttonText: 'Login',
+        error: error.response.data.error
+      })
+    }
+  }
 
   const loginForm = () => (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
-        <input value={email} onChange={handleChange('email')} type="email" className="form-control" placeholder="Your email"></input>
+        <input value={email} onChange={handleChange('email')} type="email" className="form-control" placeholder="Your email" required></input>
       </div>
       <br/>
       <div className="form-group">
-        <input value={password} onChange={handleChange('password')} type="password" className="form-control" placeholder="Type a password"></input>
+        <input value={password} onChange={handleChange('password')} type="password" className="form-control" placeholder="Type a password" required></input>
       </div>
       <br/>
       <div className="form-group">
@@ -42,6 +60,8 @@ const loginPage = () => {
     <div className="col-md-6 offset-md-3">
       <h1>Login</h1>
       <br/>
+      {success && showSuccessMessage(success)}
+      {error && showErrorMessage(error)}
       {loginForm()}
       <br/>
  
