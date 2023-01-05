@@ -58,11 +58,12 @@ exports.registerActivate = (req, res) => {
             });
         }
         //console.log(decoded)
-        const { name, email, username, password } = decoded;
+        const { name, email, username, password} = decoded;
         //console.log(password)
         const Username = username.split(" ").join("")+shortId.generate();
-        //console.log(Username)
-
+        //const username = shortId.generate();
+        
+        
 
         User.findOne({ email }).exec((err, user) => {
             if (user) {
@@ -71,9 +72,11 @@ exports.registerActivate = (req, res) => {
                 });
             }
 
+            
+            
             // register new user
 
-            const newUser = new User({ username:Username, name, email, password });
+            const newUser = new User({ username: Username, name, email, password });
             newUser.save((err, result) => {
                 if (err) {
                     return res.status(401).json({
@@ -92,3 +95,32 @@ exports.registerActivate = (req, res) => {
 
 
 };
+
+
+
+exports.login = (req, res) => {
+    const { email, password } = req.body
+    //console.table({ email, password })
+    User.findOne({email}).exec((err, user) =>{
+        if(err || !user) {
+            return res.status(400).json({
+                error: "User with that email doesnt exist. Please register"
+            })
+        };
+
+        // auethenticate
+        if(!user.authenticate(password)) {
+            return res.status(400).json({
+                error: "Email and password do not match"
+            })
+        };
+
+        // generate token and send to client
+        const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, { expiresIn: '7d' })
+        const {_id, name, email, password} = user
+
+        return res.json({
+            token, user: {_id, name, email, password}
+        })
+    })
+}

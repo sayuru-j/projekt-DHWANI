@@ -44,7 +44,7 @@ const loginPage = () => {
       <br/>
       {loginForm()}
       <br/>
-        {JSON.stringify(state)}
+ 
     </div>
   </Layout>
   }

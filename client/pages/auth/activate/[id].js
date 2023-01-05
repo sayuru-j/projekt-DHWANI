@@ -40,7 +40,7 @@ const activateAccount = ({ router }) =>{
         }
     };
 
-    return <Layout>{JSON.stringify(state)}
+    return <Layout>
         <div className="row">
                 <div className="col-md-6 offset-md-3">
                     <h1>Hey {name}, Ready to activate your account?</h1>

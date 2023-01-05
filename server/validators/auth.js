@@ -16,3 +16,12 @@ exports.userRegisterValidator = [
     .isLength({ min: 5})
     .withMessage('Password must be 5 or more character long')    
 ]
+
+exports.userLoginValidator = [
+    check('email')
+    .isEmail()
+    .withMessage('Must be a valid email'),
+    check('password')
+    .isLength({ min: 5})
+    .withMessage('Password must be 5 or more character long')    
+]
