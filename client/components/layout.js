@@ -4,6 +4,7 @@ import Link from "next/link";
 import Router from "next/router";
 import nProgress from "nprogress";
 import "nprogress/nprogress.css"
+import { isAuth, logout } from "../helpers/auth";
 
 Router.onRouteChangeStart = url => nProgress.start()
 Router.onRouteChangeComplete = url => nProgress.done()
@@ -22,31 +23,74 @@ const Layout = ({children}) => {
     
     const nav = () => (
         <ul className="nav nav-tabs bg-dark">
-
+            
             <li className="nav-item">
 
                 <Link className="nav-link text-light" href="/">Home</Link>
             
             </li>
 
-            <li className="nav-item">
+            {!isAuth() && (
+                <React.Fragment>
+                    <li className="nav-item">
             
-                <Link className="nav-link text-light" href="/register">Register</Link>
-                
-            </li>
+            <Link className="nav-link text-light" href="/register">Register</Link>
+            
+        </li>
 
-            <li className="nav-item">
+        <li className="nav-item">
+        
+            <Link className="nav-link text-light" href="/login">Login</Link>
             
-                <Link className="nav-link text-light" href="/login">Login</Link>
+        </li>
+                </React.Fragment>
+            )}
+
+            {
+                isAuth() && isAuth().role === 'admin' && (
+                    <li className="nav-item ms-auto">
+            
+                    <Link className="nav-link text-light" href="/admin">
+                        
+                    Admin</Link>
                 
-            </li>
+                    </li>
+                )
+            }
+
+
+            {
+                isAuth() && isAuth().role === 'subscriber' && (
+                    <li className="nav-item ms-auto">
+            
+                    <Link className="nav-link text-light" href="/user">
+                        
+                    User</Link>
+                
+                    </li>
+                )
+            }
+
+            {isAuth() && (
+                <li className="nav-item">
+            
+                <Link onClick={logout} className="nav-link text-light" href="/login">Logout</Link>
+                
+                </li>
+            )}
+
+    
 
         </ul>
     );
 
     return <React.Fragment>
-        {head()} {nav()} <div className="container pt-5 pb-5"> {children} </div>
-    </React.Fragment>
+        {head()} 
+        <div>
+        {nav()} 
+        </div>
+        <div className="container pt-5 pb-5"> {children} </div>
+        </React.Fragment>
 }
 
 export default Layout
